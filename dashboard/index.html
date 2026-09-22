@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Orbital Watch · SGP4, PINN &amp; combined results</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <meta name="description" content="Local orbital data, live SGP4 propagation, and close-approach research screening.">
+  <link rel="stylesheet" href="/assets/styles.css"><script src="/assets/app.js" defer></script>
+  <link rel="stylesheet" href="/assets/assistant.css"><script src="/assets/assistant.js" defer></script>
+  <link rel="stylesheet" href="/assets/model-results.css"><script src="/assets/model-results.js" defer></script>
+  <link rel="stylesheet" href="/assets/layout.css"><script src="/assets/layout.js" defer></script>
+</head>
+<body>
+  <aside class="rail" aria-label="Dashboard navigation">
+    <a class="brand-mark" href="#overview" aria-label="Orbital Watch home">OW<span>+</span></a>
+    <nav><a href="#overview" data-section="overview" aria-current="location"><span>◎</span>Orbit</a><a href="#training" data-section="training"><span>◈</span>Training</a><a href="#models" data-section="models"><span>▥</span>Evaluation</a><a href="#encounters" data-section="encounters"><span>⇄</span>Events</a><a href="#metrics" data-section="metrics"><span>▤</span>Screening</a></nav>
+    <div class="rail-end">SGP4<br>LOCAL</div>
+  </aside>
+  <main>
+    <header id="overview">
+      <div><div class="eyebrow">SPACE DEBRIS RESEARCH</div><h1>Orbital Watch</h1><p class="dashboard-intro">Explore the orbit. Inspect the training. Compare the results.</p></div>
+      <div class="header-right"><span id="connection" class="connection">Connecting</span><time id="clock">— UTC</time></div>
+    </header>
+    <div class="status-banner" id="errorBanner" role="alert" hidden></div>
+    <nav class="workflow-nav" aria-label="Research workflow"><a href="#overview" data-section="overview" aria-current="location"><span class="workflow-number">01</span><span><strong>Orbital view</strong><small>Live catalog &amp; object explorer</small></span><span class="workflow-arrow" aria-hidden="true">↗</span></a><a href="#training" data-section="training"><span class="workflow-number">02</span><span><strong>Model training</strong><small>Networks, losses &amp; checkpoints</small></span><span class="workflow-arrow" aria-hidden="true">↗</span></a><a href="#models" data-section="models"><span class="workflow-number">03</span><span><strong>Orbital evaluation</strong><small>SGP4 · PINN · Combined</small></span><span class="workflow-arrow" aria-hidden="true">↗</span></a></nav>
+    <div class="section-heading"><div class="section-title"><span class="section-number">01</span><div><div class="eyebrow">OBSERVE THE CATALOG</div><h2>Orbital view</h2></div></div><a class="section-link" href="#training">Explore model training ↓</a></div>
+    <div class="workspace">
+      <section class="orbit-panel panel" aria-labelledby="orbitTitle">
+        <div class="panel-heading"><div><h2 id="orbitTitle">Live orbital view</h2><span class="secondary" id="liveTime">Waiting for propagated positions</span></div><button id="pauseButton" class="quiet">Pause view</button></div>
+        <div class="canvas-wrap"><canvas id="orbitCanvas" aria-label="Interactive 3D view of SGP4 predicted orbital positions in TEME. Drag to rotate; scroll to zoom." tabindex="0"></canvas>
+          <div class="canvas-top"><span class="coordinate-tag">EARTH / TEME</span><span id="liveValid">— visible states</span></div>
+          <div class="canvas-bottom"><span>Drag to rotate · scroll to zoom</span><button id="resetView" class="quiet">Reset view</button></div>
+        </div>
+        <div class="legend"><span><i class="cyan-dot"></i>Stations group</span><span><i class="amber-dot"></i>Debris groups</span><span><i class="gray-dot"></i>Epoch older than 72 h</span></div>
+        <div class="object-strip"><div class="object-search"><label for="objectSearch">Inspect an object</label><input id="objectSearch" list="objectOptions" placeholder="Name or NORAD catalog number" autocomplete="off"><datalist id="objectOptions"></datalist></div><div id="objectDetails" class="object-details">Select an object to display its orbit, speed, and epoch.</div></div>
+        <details class="orbit-inspector"><summary><span><strong>Object history &amp; Gemini assistant</strong><small>Explore the selected object or ask a question</small></span><span class="inspector-toggle" aria-hidden="true">+</span></summary>
+        <section class="object-intelligence" aria-labelledby="intelligenceTitle">
+          <div class="intelligence-heading"><div><div class="eyebrow">EXPLORE THE SELECTED OBJECT</div><h2 id="intelligenceTitle">History &amp; orbital context</h2></div><button id="refreshObjectInfo" class="quiet" type="button" aria-label="Refresh selected object information">Refresh info ↻</button></div>
+          <div class="intelligence-grid">
+            <article class="object-story" aria-labelledby="objectStoryTitle">
+              <div class="object-identity"><h3 id="objectStoryTitle">Select an object</h3><span id="objectCategory" class="small-tag" hidden></span></div>
+              <p id="objectIdentityMeta" class="object-meta">Choose a point on the globe or search its name above.</p>
+              <p id="objectInfoNotice" class="object-notice" role="status" hidden></p>
+              <div id="objectInfoContent" hidden>
+                <p id="objectHistorySummary" class="object-summary"></p>
+                <p id="objectHistoryScope" class="object-scope"></p>
+                <ol id="objectTimeline" class="object-timeline" aria-label="Documented object and mission history"></ol>
+                <details class="object-disclosure"><summary>Orbit details &amp; local records <span>+</span></summary><div class="object-disclosure-body"><dl id="objectOrbitFacts" class="object-orbit-facts"></dl><p id="objectStateTime" class="object-meta"></p><h4>Saved catalog history</h4><p id="objectCatalogNote" class="object-meta"></p><div id="objectCatalogHistory" class="catalog-history"></div><h4>Latest close-approach screening</h4><div id="objectEncounterContext" class="object-encounters"></div></div></details>
+                <details class="object-disclosure"><summary>Sources <span>↗</span></summary><div id="objectSources" class="object-source-list"></div></details>
+              </div>
+            </article>
+            <section class="object-chat" aria-labelledby="objectChatTitle">
+              <div class="chat-heading"><div><h3 id="objectChatTitle"><span class="chat-spark" aria-hidden="true">✧</span> Ask Orbital Watch</h3><p id="chatObjectContext" class="object-meta">Questions about your selected object</p></div><button id="chatSettingsButton" class="quiet chat-settings" type="button" aria-haspopup="dialog" aria-controls="chatSettingsDialog">Connect Gemini</button></div>
+              <div class="chat-connection-line"><span id="chatConnectionState" class="chat-connection">Checking connection</span><button id="clearObjectChat" class="chat-text-button" type="button">Clear chat</button></div>
+              <div id="objectChatMessages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Conversation about the selected object"></div>
+              <div id="chatSuggestions" class="chat-suggestions" aria-label="Suggested questions"><button type="button" data-question="What is the history of this object, and which facts are confirmed?">Object history</button><button type="button" data-question="Explain the current orbit and how recent the source data is.">Explain its orbit</button><button type="button" data-question="What does the latest screening say about this object's close approaches? Can its collision probability be determined?">Close approaches</button></div>
+              <p id="chatRequestError" class="chat-request-error" role="alert" hidden></p>
+              <p id="chatAccountLinks" class="object-meta" hidden></p>
+              <form id="objectChatForm" class="chat-composer"><label class="assistant-sr-only" for="objectChatInput">Ask a question about space, or the selected object</label><textarea id="objectChatInput" rows="2" maxlength="4000" placeholder="Ask about this object, its history, or space…" required></textarea><div class="chat-composer-footer"><span>Enter to send · Shift + Enter for a new line</span><button id="sendObjectChat" class="primary" type="submit" disabled>Send <span aria-hidden="true">↑</span></button></div></form>
+              <p id="chatPrivacyNote" class="chat-privacy-note">Selected object data accompanies your question to Google through Gemini. Responses may be incomplete; check the linked sources.</p>
+            </section>
+          </div>
+        </section>
+        </details>
+      </section>
+      <aside class="controls-column">
+        <section class="panel controls" aria-labelledby="screenTitle">
+          <div class="panel-heading"><h2 id="screenTitle">Run a screening</h2><span class="small-tag">RESEARCH</span></div>
+          <form id="analysisForm">
+            <label for="horizon">Forecast window</label><select id="horizon"><option value="1">Next 1 hour</option><option value="6">Next 6 hours</option><option value="12">Next 12 hours</option><option value="24" selected>Next 24 hours</option><option value="48">Next 48 hours</option></select>
+            <div class="form-pair"><div><label for="threshold">Threshold (km)</label><input id="threshold" type="number" min="0.01" max="50" step="0.01" value="5" required></div><div><label for="step">Time step</label><select id="step"><option value="15">15 seconds</option><option value="30">30 seconds</option><option value="60" selected>60 seconds</option></select></div></div>
+            <label class="check-row"><input type="checkbox" id="includeStale"><span>Include epochs older than 72 hours</span></label>
+            <button type="submit" class="primary" id="runButton">Run SGP4 screening <span>→</span></button>
+          </form>
+          <div id="jobArea" class="job-area" aria-live="polite"><progress id="jobProgress" max="100" value="0"></progress><span id="jobMessage">Ready to screen the current catalog</span></div>
+          <p class="control-note">Close approaches require review. Orbital uncertainty, maneuvers, and object size are not included.</p>
+        </section>
+        <section class="panel source-panel"><div class="panel-heading"><h2>CelesTrak data</h2><span class="small-tag cyan">CONNECTED SOURCE</span></div><div id="sourceGroups" class="source-groups"></div><div class="source-date">Last download <strong id="fetchTime">—</strong></div><label class="check-row"><input id="autoRefresh" type="checkbox" checked><span>Refresh and rescreen every 2 hours</span></label><button id="refreshButton" class="secondary-button">Refresh CelesTrak data</button><p class="secondary small-text">Positions update every 5 seconds using SGP4. Source downloads respect the two-hour cache.</p></section>
+      </aside>
+    </div>
+    <section class="stat-grid" aria-label="Screening summary">
+      <article class="stat"><div class="stat-label">Catalog objects <span class="mini-icon">◎</span></div><strong id="catalogCount">—</strong><div id="catalogSub" class="stat-sub">Loading CelesTrak catalog</div></article>
+      <article class="stat"><div class="stat-label">Objects screened <span class="mini-icon">⌕</span></div><strong id="screenedCount">—</strong><div id="screenedSub" class="stat-sub">Waiting for analysis</div></article>
+      <article class="stat"><div class="stat-label">Close approaches <span class="mini-icon amber">⇄</span></div><strong id="eventCount" class="amber">—</strong><div id="eventSub" class="stat-sub">Inside the screening threshold</div></article>
+      <article class="stat"><div class="stat-label">Closest approach <span class="mini-icon">↘</span></div><strong id="closest">—</strong><div class="stat-sub">Predicted separation · not collision probability</div></article>
+    </section>
+    <section id="training" class="panel model-results training-section" aria-labelledby="trainingTitle">
+      <div class="model-results-heading"><div class="section-title"><span class="section-number">02</span><div><div class="eyebrow">LEARN THE ORBIT</div><h2 id="trainingTitle">Model training</h2><p class="secondary">Inspect the completed networks, their training history, and saved weights.</p></div></div><div class="model-heading-actions"><button id="modelResultsRefresh" class="quiet" type="button">Refresh results ↻</button><a id="modelRunDownload" class="secondary-button" hidden download>Download complete run ↓</a></div></div>
+      <div class="model-selectors training-selectors"><div><label for="modelRunSelect">Completed experiment · shared with evaluation below</label><select id="modelRunSelect" disabled><option>Loading runs…</option></select></div><span class="model-archive-tag">SAVED TRAINING RECORDS</span></div>
+      <div id="modelResultsNotice" class="model-results-notice" role="status">Loading saved model results…</div>
+      <div id="modelTrainingContent" class="training-content" hidden><div id="modelTrainingArea"></div></div>
+      <details class="model-disclosure training-launch"><summary>Train a new experiment <span>LOCAL WORKFLOW</span></summary><p class="secondary">Open <code>RunThreeModels.bat</code> in your project folder to train and evaluate all three models on the saved CelesTrak and ESA data. When it finishes, choose <strong>Refresh results</strong> above to view the verified run. Training runs on this computer; the cards show completed runs.</p></details>
+    </section>
+    <section id="models" class="panel model-results" aria-labelledby="modelResultsTitle">
+      <div class="model-results-heading"><div class="section-title"><span class="section-number">03</span><div><div class="eyebrow">MEASURE THE DIFFERENCE</div><h2 id="modelResultsTitle">Orbital evaluation</h2><p class="secondary">SGP4, PINN, and the combined model against one independent orbit reference.</p></div></div><a href="#training" class="quiet">Change experiment ↑</a></div>
+      <div id="modelEvaluationNotice" class="model-results-notice" role="status">Loading the selected experiment’s orbit evaluation…</div>
+      <div id="modelResultsContent" hidden>
+        <div class="model-reference"><div><strong id="modelObjectName"></strong><p id="modelReferenceText"></p><p id="modelIntervalText"></p></div><div class="model-reference-note">Saved benchmark on one satellite. Live catalog positions and screening are shown in the orbital view above.</div></div>
+        <div class="model-selectors evaluation-selectors"><div><label for="modelSplitSelect">Evaluation interval</label><select id="modelSplitSelect"><option value="test" selected>Test · reserved interval</option><option value="validation">Validation · model selection</option><option value="train">Training · calibration interval</option></select></div><span class="model-archive-tag">INDEPENDENT ESA REFERENCE</span></div>
+        <div id="modelResultsTabs" class="model-tabs" role="tablist" aria-label="Model results"><button type="button" role="tab" id="modelTabComparison" aria-controls="modelResultsPanel" aria-selected="true" data-model="comparison">Comparison</button><button type="button" role="tab" id="modelTabSGP4" aria-controls="modelResultsPanel" aria-selected="false" tabindex="-1" data-model="SGP4">SGP4</button><button type="button" role="tab" id="modelTabPINN" aria-controls="modelResultsPanel" aria-selected="false" tabindex="-1" data-model="PINN">PINN</button><button type="button" role="tab" id="modelTabCombined" aria-controls="modelResultsPanel" aria-selected="false" tabindex="-1" data-model="COMBINED">Combined <span>SGP4 + NN</span></button></div>
+        <div id="modelResultsPanel" class="model-results-panel" role="tabpanel" aria-labelledby="modelTabComparison" tabindex="0">
+          <div class="model-view-heading"><div><h3 id="modelViewTitle"></h3><p id="modelViewDescription" class="secondary"></p></div><span id="modelSampleCount" class="small-tag"></span></div>
+          <div id="modelMetricCards" class="model-metric-cards"></div>
+          <p id="modelComparisonInsight" class="model-insight" hidden></p>
+          <div class="model-section-heading"><div><h3>Error metrics</h3><p class="secondary">Position in meters · velocity in meters per second · smaller errors are better.</p></div><a id="modelMetricsDownload" class="quiet" download>Metrics CSV ↓</a></div>
+          <div id="modelMetricTables" class="model-metric-tables"></div>
+          <p class="model-metric-note">RMSE and MAE use the Euclidean position or velocity error. R / T / N means radial, transverse, and normal. Open the full metrics for component errors, bias, and exact stored values.</p>
+          <details class="model-disclosure"><summary>Full evaluation values <span>JSON</span></summary><pre id="modelFullMetrics" class="model-json"></pre></details>
+          <div id="modelPredictionArea"></div>
+          <div class="model-section-heading"><div><h3>Saved graphs</h3><p id="modelFigureNote" class="secondary">Open a graph at full size or download its PNG / SVG.</p></div><span id="modelFigureCount" class="small-tag"></span></div>
+          <div id="modelFigureGallery" class="model-figure-gallery"></div>
+          <div class="model-collision-note"><strong>Collision evaluation</strong><p>Accuracy, precision, recall, F1, and collision probability are unavailable for this orbit benchmark. There are no labeled collision outcomes or encounter covariance inputs.</p><details class="model-disclosure"><summary>Stored availability details</summary><pre id="modelCollisionDetails" class="model-json"></pre></details></div>
+          <details class="model-disclosure"><summary>Hardware, timing &amp; verification <span>DETAILS</span></summary><div id="modelVerificationContent" class="model-verification-content"></div></details>
+        </div>
+        <details class="model-disclosure model-files-disclosure"><summary>All run files &amp; downloads <span id="modelFileCount"></span></summary><div class="model-file-content"><label for="modelFileSearch">Find a result, checkpoint, source input, or report</label><input id="modelFileSearch" type="search" placeholder="Filter files…"><div id="modelFileList" class="model-file-list"></div></div></details>
+      </div>
+    </section>
+    <section id="encounters" class="panel encounters">
+      <div class="panel-heading"><div><div class="eyebrow">CONJUNCTION SCREENING</div><h2>Close-approach register <span id="tableCount" class="count-tag">0</span></h2><p id="windowText" class="secondary">Run an analysis to populate the register.</p></div><div class="table-tools"><input id="eventSearch" type="search" placeholder="Filter object or NORAD ID" aria-label="Filter encounters"><a id="csvDownload" class="quiet disabled" href="#">Export CSV ↗</a></div></div>
+      <div class="event-layout"><div class="table-wrap"><table><thead><tr><th scope="col">Object pair</th><th scope="col">Miss distance</th><th scope="col">Closest approach · UTC</th><th scope="col">Relative speed</th><th scope="col">Epoch age at TCA</th></tr></thead><tbody id="eventRows"><tr><td colspan="5" class="empty-cell">Loading screening results…</td></tr></tbody></table><button id="showMore" class="quiet show-more" hidden>Show more encounters</button></div>
+        <aside class="encounter-detail" id="encounterDetail"><span class="eyebrow">ENCOUNTER DETAIL</span><h3 id="detailTitle">Select a close approach</h3><div id="detailFacts" class="detail-facts">The distance curve and encounter details will appear here.</div><svg id="distanceChart" viewBox="0 0 330 180" role="img" aria-label="Predicted separation around closest approach"></svg><p id="detailNote" class="secondary small-text">Small separations may include co-orbiting or docked objects. Inspect the object names and element ages.</p></aside></div>
+    </section>
+    <section id="metrics" class="metrics-section">
+      <div class="panel evaluation-panel">
+        <div class="panel-heading"><div class="eyebrow">LIVE SGP4 SCREENING</div><span id="labelStatus" class="small-tag">NOT EVALUATED</span></div>
+        <h2>Close-approach classification</h2>
+        <div class="quality-grid"><div><span>Accuracy</span><strong id="accuracy">N/A</strong></div><div><span>Precision</span><strong id="precision">N/A</strong></div><div><span>Recall</span><strong id="recall">N/A</strong></div><div><span>F1 score</span><strong id="f1">N/A</strong></div></div>
+        <p id="classificationScope" class="secondary small-text">Waiting for the saved screening evaluation.</p>
+        <p id="evaluationReason" class="secondary">These scores require independent yes/no close-approach outcomes for the same object pairs, forecast window, and distance threshold.</p>
+        <p class="secondary small-text">Saved benchmark RMSE, MAE, and RTN results are available in <a href="#models">Orbital evaluation: SGP4, PINN &amp; Combined →</a></p>
+        <div class="validation-line"><span>Valid computed states <strong id="propagationRate">—</strong></span><span>SGP4 implementation check <strong id="referenceStatus">—</strong></span></div>
+        <p class="secondary small-text">These checks describe numerical execution. Detection scores require independent reference outcomes.</p>
+      </div>
+      <div class="panel export-panel"><div class="eyebrow">SAVED RUN</div><h2>Every result, together.</h2><p class="secondary">Trajectories, encounters, metrics, input data, exclusions, figures, and the full report.</p><code id="resultFolder">No completed analysis yet</code><div class="export-buttons"><a class="primary disabled" id="zipDownload" href="#">Download complete run ↓</a><a class="secondary-button disabled" id="reportDownload" href="#">Report</a><a class="secondary-button disabled" id="metricsDownload" href="#">Metrics CSV</a></div><span id="runtimeText" class="secondary small-text">Results stay in your local project folder.</span></div>
+    </section>
+    <footer><span>ORBITAL WATCH <b>/</b> SGP4 · UTC · TEME · km</span><span>Research screening · <a href="https://celestrak.org/NORAD/documentation/gp-data-formats.php" target="_blank" rel="noreferrer">CelesTrak documentation ↗</a></span></footer>
+  </main>
+  <dialog id="chatSettingsDialog" class="chat-settings-dialog" aria-labelledby="chatSettingsTitle" aria-describedby="chatSettingsDescription">
+    <div class="chat-dialog-heading"><div><div class="eyebrow">GEMINI · GOOGLE</div><h2 id="chatSettingsTitle">Connect to Gemini</h2></div><button id="closeChatSettings" class="quiet" type="button" aria-label="Close Gemini settings">✕</button></div>
+    <p id="chatSettingsDescription" class="secondary">Your Gemini API key stays encrypted on this computer. Questions and selected object context are sent to Google.</p>
+    <form id="chatSettingsForm">
+      <p id="chatProviderNotice" class="chat-settings-message" role="status" hidden></p>
+      <label id="chatApiKeyLabel" for="chatApiKey">Gemini API key</label><input id="chatApiKey" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your Gemini API key" required>
+      <p id="chatKeyHint" class="object-meta">The key is never included in the conversation.</p>
+      <label for="chatModelName">Model</label><input id="chatModelName" type="text" value="gemini-3.1-flash-lite" maxlength="100" autocomplete="off" spellcheck="false" required>
+      <p id="chatModelHint" class="object-meta">Use a model available to your Gemini API account.</p>
+      <p id="chatProviderLinks" class="object-meta"></p>
+      <p id="chatSettingsMessage" class="chat-settings-message" role="status" hidden></p><div class="chat-settings-actions"><button id="disconnectChat" type="button" class="quiet" hidden>Remove saved key</button><button id="saveChatSettings" type="submit" class="primary">Save connection</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

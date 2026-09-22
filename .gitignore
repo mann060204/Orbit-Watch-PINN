@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+data/
+.pytest_cache/
+results/
+pinn_results/
+comparison_results/
+ground_truth_results/
+model_results/
+dashboard/model-results/
+reference_inputs/
+.mplconfig/
+*.log
+.local/
+.env
+.env.*

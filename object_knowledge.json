@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-09-13",
+  "sources": {
+    "celestrak-gp": {
+      "id": "celestrak-gp",
+      "title": "CelesTrak — General Perturbations data formats",
+      "url": "https://celestrak.org/NORAD/documentation/gp-data-formats.php"
+    },
+    "nasa-collision": {
+      "id": "nasa-collision",
+      "title": "NASA — The Day Fermi Dodged a 1.5-ton Bullet (2009 collision history)",
+      "url": "https://www.nasa.gov/science-research/the-day-nasas-fermi-dodged-a-1-5-ton-bullet/"
+    },
+    "esa-debris": {
+      "id": "esa-debris",
+      "title": "ESA — Space Debris FAQ (Fengyun-1C breakup)",
+      "url": "https://www.esa.int/Space_Safety/Space_Debris/Space_Debris_FAQ_Frequently_asked_questions"
+    },
+    "nasa-iss-assembly": {
+      "id": "nasa-iss-assembly",
+      "title": "NASA — International Space Station Assembly Elements",
+      "url": "https://www.nasa.gov/international-space-station/international-space-station-assembly-elements/"
+    },
+    "nasa-iss": {
+      "id": "nasa-iss",
+      "title": "NASA — International Space Station history and research",
+      "url": "https://www.nasa.gov/reference/international-space-station/"
+    }
+  },
+  "families": {
+    "iridium-33-debris": {
+      "parent_id": 24946,
+      "parent_name": "Iridium 33",
+      "history_summary": "This CelesTrak family is associated with Iridium 33, a communications satellite that collided with the inactive Cosmos 2251 satellite on 10 February 2009. The collision produced debris from both spacecraft.",
+      "history_scope": "Parent satellite and breakup family. These sources do not establish this individual fragment's dimensions, material, separation time, or complete tracking history.",
+      "history_events": [
+        {
+          "date": "2009-02-10",
+          "title": "Iridium 33–Cosmos 2251 collision",
+          "description": "The operating Iridium 33 satellite collided with the inactive Russian Cosmos 2251 satellite. Radar subsequently detected debris along both spacecraft's orbits.",
+          "source_ids": ["nasa-collision"]
+        }
+      ],
+      "source_ids": ["nasa-collision"]
+    },
+    "cosmos-2251-debris": {
+      "parent_id": 22675,
+      "parent_name": "Cosmos 2251",
+      "history_summary": "This CelesTrak family is associated with Cosmos 2251, an inactive Russian communications satellite involved in the 10 February 2009 collision with Iridium 33. Debris from both spacecraft entered the tracking catalog.",
+      "history_scope": "Parent satellite and breakup family. These sources do not establish this individual fragment's dimensions, material, separation time, or complete tracking history.",
+      "history_events": [
+        {
+          "date": "2009-02-10",
+          "title": "Cosmos 2251–Iridium 33 collision",
+          "description": "Cosmos 2251 and the operating Iridium 33 communications satellite collided, producing debris clouds detected by radar.",
+          "source_ids": ["nasa-collision"]
+        }
+      ],
+      "source_ids": ["nasa-collision"]
+    },
+    "fengyun-1c-debris": {
+      "parent_id": 25730,
+      "parent_name": "Fengyun-1C",
+      "history_summary": "This CelesTrak family is associated with Fengyun-1C, the Chinese satellite destroyed during an anti-satellite test on 11 January 2007. ESA documents the intercept at approximately 862 km altitude and the resulting long-lived debris population.",
+      "history_scope": "Parent satellite and breakup family. The event altitude describes the 2007 intercept, not this fragment's current altitude. Individual fragment shape, mass, and complete tracking history are unavailable here.",
+      "history_events": [
+        {
+          "date": "2007-01-11",
+          "title": "Fengyun-1C anti-satellite test",
+          "description": "China intercepted Fengyun-1C in a near-polar orbit. The breakup generated a large population of fragments at an altitude where atmospheric drag removes debris slowly.",
+          "source_ids": ["esa-debris"]
+        }
+      ],
+      "source_ids": ["esa-debris"]
+    }
+  },
+  "objects": {
+    "25544": {
+      "category": "International Space Station",
+      "history_summary": "The ISS is an international orbital laboratory for microgravity research and technology demonstrations. Assembly began with Zarya in 1998; the first resident expedition arrived in November 2000.",
+      "history_scope": "Mission history for the ISS catalog entry. Other objects in CelesTrak's stations group may be modules, visiting spacecraft, or separate stations and need their own mission sources.",
+      "history_events": [
+        {
+          "date": "1998-11-20",
+          "title": "Zarya launched",
+          "description": "Zarya, the first ISS assembly element, launched into orbit.",
+          "source_ids": ["nasa-iss-assembly"]
+        },
+        {
+          "date": "1998-12-06",
+          "title": "Unity joined Zarya",
+          "description": "The STS-88 crew attached the Unity module to Zarya, beginning assembly in orbit.",
+          "source_ids": ["nasa-iss-assembly"]
+        },
+        {
+          "date": "2000-11-02",
+          "title": "First resident crew arrived",
+          "description": "Expedition 1 docked with the station, beginning its continuous human presence.",
+          "source_ids": ["nasa-iss"]
+        }
+      ],
+      "source_ids": ["nasa-iss-assembly", "nasa-iss"]
+    }
+  }
+}
