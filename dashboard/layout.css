@@ -7,7 +7,7 @@ main { max-width: 1900px; }
 .rail nav a[aria-current="location"] { border-left-color: var(--cyan); color: var(--cyan); background: linear-gradient(90deg, #163031, transparent); }
 .rail-end { font-size: 10px; }
 
-.workflow-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0 0 24px; }
+.workflow-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 0 0 24px; }
 .workflow-nav a { display: flex; align-items: center; gap: 14px; text-align: left; min-width: 0; padding: 16px 18px; border: 1px solid var(--line); border-radius: 9px; background: #0f1821; transition: border-color .15s, background .15s; }
 .workflow-nav a:hover { background: #14232c; border-color: #426065; }
 .workflow-nav a[aria-current="location"] { border-color: #3b7775; background: linear-gradient(105deg, #173031, #101c25); }

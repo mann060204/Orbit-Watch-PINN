@@ -8,12 +8,13 @@
   <link rel="stylesheet" href="/assets/styles.css"><script src="/assets/app.js" defer></script>
   <link rel="stylesheet" href="/assets/assistant.css"><script src="/assets/assistant.js" defer></script>
   <link rel="stylesheet" href="/assets/model-results.css"><script src="/assets/model-results.js" defer></script>
+  <link rel="stylesheet" href="/assets/assessment.css"><script src="/assets/assessment.js" defer></script>
   <link rel="stylesheet" href="/assets/layout.css"><script src="/assets/layout.js" defer></script>
 </head>
 <body>
   <aside class="rail" aria-label="Dashboard navigation">
     <a class="brand-mark" href="#overview" aria-label="Orbital Watch home">OW<span>+</span></a>
-    <nav><a href="#overview" data-section="overview" aria-current="location"><span>◎</span>Orbit</a><a href="#training" data-section="training"><span>◈</span>Training</a><a href="#models" data-section="models"><span>▥</span>Evaluation</a><a href="#encounters" data-section="encounters"><span>⇄</span>Events</a><a href="#metrics" data-section="metrics"><span>▤</span>Screening</a></nav>
+    <nav><a href="#overview" data-section="overview" aria-current="location"><span>◎</span>Orbit</a><a href="#training" data-section="training"><span>◈</span>Training</a><a href="#models" data-section="models"><span>▥</span>Evaluation</a><a href="#assessment" data-section="assessment"><span>◫</span>Assessment</a><a href="#encounters" data-section="encounters"><span>⇄</span>Events</a><a href="#metrics" data-section="metrics"><span>▤</span>Screening</a></nav>
     <div class="rail-end">SGP4<br>LOCAL</div>
   </aside>
   <main>
@@ -22,7 +23,7 @@
       <div class="header-right"><span id="connection" class="connection">Connecting</span><time id="clock">— UTC</time></div>
     </header>
     <div class="status-banner" id="errorBanner" role="alert" hidden></div>
-    <nav class="workflow-nav" aria-label="Research workflow"><a href="#overview" data-section="overview" aria-current="location"><span class="workflow-number">01</span><span><strong>Orbital view</strong><small>Live catalog &amp; object explorer</small></span><span class="workflow-arrow" aria-hidden="true">↗</span></a><a href="#training" data-section="training"><span class="workflow-number">02</span><span><strong>Model training</strong><small>Networks, losses &amp; checkpoints</small></span><span class="workflow-arrow" aria-hidden="true">↗</span></a><a href="#models" data-section="models"><span class="workflow-number">03</span><span><strong>Orbital evaluation</strong><small>SGP4 · PINN · Combined</small></span><span class="workflow-arrow" aria-hidden="true">↗</span></a></nav>
+    <nav class="workflow-nav" aria-label="Research workflow"><a href="#overview" data-section="overview" aria-current="location"><span class="workflow-number">01</span><span><strong>Orbital view</strong><small>Live catalog &amp; object explorer</small></span><span class="workflow-arrow" aria-hidden="true">↗</span></a><a href="#training" data-section="training"><span class="workflow-number">02</span><span><strong>Model training</strong><small>Networks, losses &amp; checkpoints</small></span><span class="workflow-arrow" aria-hidden="true">↗</span></a><a href="#models" data-section="models"><span class="workflow-number">03</span><span><strong>Orbital evaluation</strong><small>SGP4 · PINN · Combined</small></span><span class="workflow-arrow" aria-hidden="true">↗</span></a><a href="#assessment" data-section="assessment"><span class="workflow-number">04</span><span><strong>Research assessment</strong><small>Accuracy · physics · reliability · cost</small></span><span class="workflow-arrow" aria-hidden="true">↗</span></a></nav>
     <div class="section-heading"><div class="section-title"><span class="section-number">01</span><div><div class="eyebrow">OBSERVE THE CATALOG</div><h2>Orbital view</h2></div></div><a class="section-link" href="#training">Explore model training ↓</a></div>
     <div class="workspace">
       <section class="orbit-panel panel" aria-labelledby="orbitTitle">
@@ -113,6 +114,26 @@
           <details class="model-disclosure"><summary>Hardware, timing &amp; verification <span>DETAILS</span></summary><div id="modelVerificationContent" class="model-verification-content"></div></details>
         </div>
         <details class="model-disclosure model-files-disclosure"><summary>All run files &amp; downloads <span id="modelFileCount"></span></summary><div class="model-file-content"><label for="modelFileSearch">Find a result, checkpoint, source input, or report</label><input id="modelFileSearch" type="search" placeholder="Filter files…"><div id="modelFileList" class="model-file-list"></div></div></details>
+      </div>
+    </section>
+    <section id="assessment" class="panel research-assessment" aria-labelledby="assessmentTitle">
+      <div class="assessment-heading">
+        <div class="section-title"><span class="section-number">04</span><div><div class="eyebrow">QUANTITATIVE ASSESSMENT</div><h2 id="assessmentTitle">Research assessment</h2><p class="secondary">Compare prediction accuracy, physical consistency, reproducibility, and measured compute cost.</p></div></div>
+        <div class="assessment-actions"><span id="assessmentSplitLabel" class="assessment-scope-tag">Waiting for saved experiment</span><button id="assessmentRefresh" class="quiet" type="button">Refresh assessment ↻</button></div>
+      </div>
+      <div id="assessmentNotice" class="assessment-notice" role="status" aria-live="polite">Loading the saved benchmark…</div>
+      <div id="assessmentContent" class="assessment-content" hidden>
+        <div class="assessment-runline"><strong id="assessmentRunName"></strong><span id="assessmentRunMeta"></span></div>
+        <div id="assessmentFinding" class="assessment-finding" role="note"></div>
+        <div class="assessment-grid">
+          <article class="assessment-card assessment-accuracy-card"><div class="assessment-card-heading"><div><div class="eyebrow">01 · PREDICTION ACCURACY</div><h3>Position error against the reference</h3></div><span class="assessment-unit">km · lower is better</span></div><p id="assessmentAccuracyScope" class="assessment-card-note"></p><div id="assessmentAccuracyChart" class="assessment-error-chart" role="list" aria-label="Position RMSE comparison"></div></article>
+          <article class="assessment-card"><div class="assessment-card-heading"><div><div class="eyebrow">02 · PHYSICAL CONSISTENCY</div><h3>Approximate central-gravity + J2 checks</h3></div></div><p class="assessment-card-note">Diagnostics cover the full saved arc. They measure consistency with this approximate force model, not agreement with observed orbit truth.</p><div id="assessmentPhysicsTable" class="assessment-table-wrap"></div></article>
+          <article class="assessment-card assessment-reliability-card"><div class="assessment-card-heading"><div><div class="eyebrow">03 · RELIABILITY</div><h3>Execution &amp; replay checks</h3></div><span id="assessmentCheckCount" class="assessment-check-count"></span></div><div id="assessmentReliabilityChecks" class="assessment-checks"></div><div class="assessment-limit"><strong>Predictive reliability remains unquantified</strong><p>One satellite and one held-out arc cannot establish performance across orbit classes, initial conditions, or random seeds. No calibrated uncertainty or labeled collision outcomes are available.</p></div></article>
+          <article class="assessment-card assessment-efficiency-card"><div class="assessment-card-heading"><div><div class="eyebrow">04 · COMPUTATIONAL EFFICIENCY</div><h3>Measured prediction &amp; training cost</h3></div></div><div id="assessmentEfficiencyTable" class="assessment-table-wrap"></div><p class="assessment-card-note">Parameter counts mean trainable neural-network weights plus biases. SGP4 has no learned neural parameters; its constants are fixed by the selected gravity model.</p><p id="assessmentHardwareNote" class="assessment-card-note"></p><p class="assessment-complexity-note"><strong>Scaling model:</strong> For a fixed network, SGP4 propagation is approximately O(N) over N forecast samples; dense-network inference is approximately O(N × P), where P is the parameter count. PINN fitting grows roughly with optimizer steps × batch size × P, plus automatic-differentiation overhead. This benchmark measures one horizon, so the timings do not establish how cost grows with horizon or catalog size.</p></article>
+        </div>
+        <details class="assessment-parameter-disclosure" open><summary>Model parameterization &amp; training setup <span>NETWORKS · INPUTS · PHYSICS</span></summary><div id="assessmentParameterDetails" class="assessment-parameter-grid"></div></details>
+        <div class="assessment-methods"><div class="assessment-methods-heading"><div><div class="eyebrow">METHODS &amp; COMPARABILITY</div><h3>What each result represents</h3></div></div><div id="assessmentMethodCards" class="assessment-method-grid"></div></div>
+        <div class="assessment-footnote"><strong>Scope:</strong> This retrospective benchmark uses an ESA GNSS restituted orbit estimate (AUX_RESORB), not final precise-orbit truth. The combined residual model uses earlier ESA calibration and validation samples; standalone PINN training uses no ESA labels. Compare those results with their different information budgets in mind. <div id="assessmentDownloads" class="assessment-downloads" aria-label="Assessment source files"></div></div>
       </div>
     </section>
     <section id="encounters" class="panel encounters">

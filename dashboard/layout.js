@@ -1,7 +1,7 @@
 (() => {
   "use strict";
   const links = Array.from(document.querySelectorAll("a[data-section]"));
-  const sections = ["overview", "training", "models", "encounters", "metrics"]
+  const sections = ["overview", "training", "models", "assessment", "encounters", "metrics"]
     .map(id => document.getElementById(id)).filter(Boolean);
   let queued = false;
   function markCurrent() {
